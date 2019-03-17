@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "queue": "cpp",
+        "deque": "cpp",
+        "iostream": "cpp",
+        "algorithm": "cpp",
+        "utility": "cpp",
+        "stdexcept": "cpp"
+    },
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "java.dependency.packagePresentation": "flat",
+    "python.linting.pylintEnabled": true
+}

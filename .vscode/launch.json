@@ -1,0 +1,78 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Main2",
+            "request": "launch",
+            "mainClass": "Main2",
+            "projectName": "code_301e558e"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StdDraw",
+            "request": "launch",
+            "mainClass": "StdDraw",
+            "projectName": "code_301e558e"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Main",
+            "request": "launch",
+            "mainClass": "Main"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - test",
+            "request": "launch",
+            "mainClass": "test"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - poj3069",
+            "request": "launch",
+            "mainClass": "poj3069"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - poj3617",
+            "request": "launch",
+            "mainClass": "poj3617"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - template",
+            "request": "launch",
+            "mainClass": "template"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - poj2386",
+            "request": "launch",
+            "mainClass": "poj2386"
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
