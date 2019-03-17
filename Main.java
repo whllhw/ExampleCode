@@ -13,28 +13,40 @@ public class Main {
         if (l > r) {
             return -1;
         }
+        // 选中中轴值为第一个
+        // i 就要从第二个开始
         int pivot = nums[l];
         int i = l + 1;
         int j = r;
         while (i <= j) {
+            // i一直向中间移动到第一大于划分值为止
             while (i <= r && nums[i] < pivot) {
                 i++;
             }
+            // j一直向中间移动到第一个小于划分值为止
             while (j >= l && nums[j] > pivot) {
                 j--;
             }
+            // 判断有无相交
             if (i < j) {
+                // 无相交直接交换两个值即可
                 int t = nums[i];
                 nums[i] = nums[j];
                 nums[j] = t;
+                // 注意与pivot值相同的情况就需要手动向中间移动，不然会出现死循环
+                // 不相同的情况在后续迭代指针中会移动
                 if (nums[i] == nums[j]) {
                     i++;
                     j--;
-                }
+                } 
             } else {
                 break;
             }
         }
+        System.out.printf("i:%d j:%d\n",i,j);
+        // 相交的情况就j直接和pivot值交换
+        // 此时j左边的全部都大于了pivot，i右边都全部小于pivot
+        // 完成了划分操作
         nums[l] = nums[j];
         nums[j] = pivot;
         return j;
@@ -57,9 +69,10 @@ public class Main {
             Arrays.sort(ans);
             long stop = System.currentTimeMillis();
             String system = Arrays.toString(ans);
-            // quickSort(ans2, 0, ans2.length - 1);
             long start2 = System.currentTimeMillis();
-            int[] temp = quickSortWithCopyArray(ans2, ans2.length);
+            quickSort(ans2, 0, ans2.length - 1);
+            int[] temp = ans2;
+            // int[] temp = quickSortWithCopyArray(ans2, ans2.length);
             long stop2 = System.currentTimeMillis();
             String self = Arrays.toString(temp);
             // System.out.printf("i:%d sys:%d my:%d\n", i, stop - start, stop2 - start2);
