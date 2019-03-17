@@ -1,20 +1,68 @@
 import java.util.*;
 import java.io.*;
 import edu.princeton.cs.algs4.*;
-import org.junit.Test;
+import jdk.jfr.events.ExceptionThrownEvent;
 
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner sc = new Scanner(new File("Main.in"));
+        testQuickSort();
+    }
+
+    public static int partition(int[] nums, int l, int r) {
+        if (l > r) {
+            return -1;
+        }
+        int pivot = nums[l];
+        int i = l + 1;
+        int j = r;
+        while (i <= j) {
+            while (i <= r && nums[i] < pivot) {
+                i++;
+            }
+            while (j >= l && nums[j] > pivot) {
+                j--;
+            }
+            if (i < j) {
+                int t = nums[i];
+                nums[i] = nums[j];
+                nums[j] = t;
+                if (nums[i] == nums[j]) {
+                    i++;
+                    j--;
+                }
+            } else {
+                break;
+            }
+        }
+        nums[l] = nums[j];
+        nums[j] = pivot;
+        return j;
+    }
+
+    public static void quickSort(int[] nums, int l, int r) {
+        if (l < r) {
+            int p = partition(nums, l, r);
+            quickSort(nums, l, p);
+            quickSort(nums, p + 1, r);
+        }
     }
 
     public static void testQuickSort() {
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 286; i < 100000; i++) {
+            // System.out.println(i);
             int[] ans = randomList(i);
+            int[] ans2 = Arrays.copyOf(ans, ans.length);
+            long start = System.currentTimeMillis();
             Arrays.sort(ans);
+            long stop = System.currentTimeMillis();
             String system = Arrays.toString(ans);
-            String self = Arrays.toString(quickSort(ans, ans.length));
+            // quickSort(ans2, 0, ans2.length - 1);
+            long start2 = System.currentTimeMillis();
+            int[] temp = quickSortWithCopyArray(ans2, ans2.length);
+            long stop2 = System.currentTimeMillis();
+            String self = Arrays.toString(temp);
+            // System.out.printf("i:%d sys:%d my:%d\n", i, stop - start, stop2 - start2);
             if (!system.equals(self)) {
                 System.out.println(self);
                 System.out.println(system);
@@ -32,7 +80,7 @@ public class Main {
     }
 
     // 使用额外空间的快排
-    public static int[] quickSort(int[] num, int len) {
+    public static int[] quickSortWithCopyArray(int[] num, int len) {
         if (num == null || len <= 1) {
             return num;
         }
@@ -55,8 +103,8 @@ public class Main {
             else
                 counter++;
         }
-        int[] a = quickSort(less, i);
-        int[] b = quickSort(greater, j);
+        int[] a = quickSortWithCopyArray(less, i);
+        int[] b = quickSortWithCopyArray(greater, j);
         int[] merge = new int[i + j + counter];
         System.arraycopy(a, 0, merge, 0, i);
         for (int x = 0; x < counter; x++)
