@@ -7,10 +7,66 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(new File("Main.in"));
-        new Main().testKMP();
     }
 
-    public void testKMP(){
+    public static void testQuickSort() {
+        for (int i = 0; i < 100000; i++) {
+            int[] ans = randomList(i);
+            Arrays.sort(ans);
+            String system = Arrays.toString(ans);
+            String self = Arrays.toString(quickSort(ans, ans.length));
+            if (!system.equals(self)) {
+                System.out.println(self);
+                System.out.println(system);
+                return;
+            }
+        }
+    }
+
+    public static int[] randomList(int len) {
+        int[] ans = new int[len];
+        for (int i = 0; i < len; i++) {
+            ans[i] = (int) (Math.random() * 100000);
+        }
+        return ans;
+    }
+
+    // 使用额外空间的快排
+    public static int[] quickSort(int[] num, int len) {
+        if (num == null || len <= 1) {
+            return num;
+        }
+        // 最后一个数做为划分的基准
+        int pivot = num[len - 1];
+        int counter = 1;
+        int[] less = new int[len];
+        int[] greater = new int[len];
+        int i = 0;
+        int j = 0;
+        // 把比基准小的数放到less
+        // 否则把数放到greater中
+        // 注意基准数不再参与后续的排序
+        // 把出现相同的数量记录下来，合并时再放到一起
+        for (int pos = 0; pos < len - 1; pos++) {
+            if (num[pos] < pivot)
+                less[i++] = num[pos];
+            else if (num[pos] > pivot)
+                greater[j++] = num[pos];
+            else
+                counter++;
+        }
+        int[] a = quickSort(less, i);
+        int[] b = quickSort(greater, j);
+        int[] merge = new int[i + j + counter];
+        System.arraycopy(a, 0, merge, 0, i);
+        for (int x = 0; x < counter; x++)
+            merge[i + x] = pivot;
+        System.arraycopy(b, 0, merge, i + counter, j);
+        // System.out.println(Arrays.toString(merge));
+        return merge;
+    }
+
+    public void testKMP() {
         String s1 = "9abcabaabc";
         String s2 = "abcaba";
         System.out.println(KMP(s1.toCharArray(), 0, s2.toCharArray()));
