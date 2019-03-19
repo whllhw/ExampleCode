@@ -1,12 +1,78 @@
 import java.util.*;
 import java.io.*;
-import edu.princeton.cs.algs4.*;
-import jdk.jfr.events.ExceptionThrownEvent;
 
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
-        testQuickSort();
+        System.out.println(Math.ceil(1.1f));
+        int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
+        // int[] b = mergeSort(a);
+        // System.out.println(Arrays.toString(b));
+        // int[] nums = { 2, 3, 1, 6, 3, 2, 1 };
+        insertSort(nums);
+        System.out.println(Arrays.toString(nums));
+    }
+
+    // 插入排序
+    public static void insertSort(int[] nums) {
+        // 对于有序序列复杂度为O（n）（检查一遍有序即可）
+        // 步骤
+        // 1.认为第一元素是有序的
+        // 2.每次与前一个元素比较，当小于时就交换位置，指针向前移动
+        // 3.不小于时，就到下一个位置
+        for (int i = 1; i < nums.length; i++) {
+            while (i > 0 && nums[i] < nums[i - 1]) {
+                int temp = nums[i];
+                nums[i] = nums[i - 1];
+                nums[i - 1] = temp;
+                i--;
+            }
+        }
+    }
+
+    public static int[] merge(int[] left, int[] right) {
+        int[] ans = new int[left.length + right.length];
+        int i = 0, j = 0, pos = 0;
+        // 由于两个数组已经是有序的了，只需要比较开头的元素大小就能确定位置
+        // 比较次数最多情况是两个数组交错，次数为2n-1
+        // 最少为一个数组全部小于第二个数组，次数为n
+        while (i < left.length && j < right.length) {
+            if (left[i] > right[j]) {
+                ans[pos++] = right[j++];
+            } else {
+                ans[pos++] = left[i++];
+            }
+        }
+        while (i < left.length)
+            ans[pos++] = left[i++];
+        while (j < right.length)
+            ans[pos++] = right[j++];
+        return ans;
+    }
+    /**
+     * 归并排序
+     */
+    public static int[] mergeSort(int[] nums) {
+        // 数组个数小于等于 1 是认为是有序的
+        if (nums == null || nums.length <= 1) {
+            return nums;
+        }
+        // 分：
+        // 把原数组分成等量的两份
+        // 分别调用自身进行排序
+        // 归并：
+        // 调用归并把两个排好序的数组合并成一个
+        int mid = nums.length / 2;
+        int[] na = new int[mid];
+        int[] nb = new int[nums.length - mid];
+        int pos = 0;
+        for (int i = 0; i < mid; i++)
+            na[i] = nums[pos++];
+        for (int i = 0; i < nums.length - mid; i++)
+            nb[i] = nums[pos++];
+        int[] left = mergeSort(na);
+        int[] right = mergeSort(nb);
+        return merge(left, right);
     }
 
     public static int partition(int[] nums, int l, int r) {
@@ -38,12 +104,12 @@ public class Main {
                 if (nums[i] == nums[j]) {
                     i++;
                     j--;
-                } 
+                }
             } else {
                 break;
             }
         }
-        System.out.printf("i:%d j:%d\n",i,j);
+        System.out.printf("i:%d j:%d\n", i, j);
         // 相交的情况就j直接和pivot值交换
         // 此时j左边的全部都大于了pivot，i右边都全部小于pivot
         // 完成了划分操作
