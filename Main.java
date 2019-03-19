@@ -9,8 +9,111 @@ public class Main {
         // int[] b = mergeSort(a);
         // System.out.println(Arrays.toString(b));
         // int[] nums = { 2, 3, 1, 6, 3, 2, 1 };
-        insertSort(nums);
-        System.out.println(Arrays.toString(nums));
+        // insertSort(nums);
+        // System.out.println(Arrays.toString(nums));
+        testTraversal();
+    }
+
+    public static void testTraversal() {
+
+        TreeNode root = new TreeNode(new TreeNode(new TreeNode(null, null, 4), new TreeNode(null, null, 5), 2),
+                new TreeNode(new TreeNode(null, null, 6), new TreeNode(null, null, 7), 3), 1);
+        preorderTraversal(root);
+        midorderTraversal(root);
+        afterorderTraversal(root);
+    }
+
+    static class TreeNode {
+        public TreeNode left;
+        public TreeNode right;
+        public int val;
+
+        public TreeNode(TreeNode left, TreeNode right, int val) {
+            this.left = left;
+            this.right = right;
+            this.val = val;
+        }
+    }
+
+    // 二叉树后序遍历
+    public static void afterorderTraversal(TreeNode node) {
+        // 与前序遍历类似
+        // 不过需要添加一个访问过的节点
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        // 当前考察的节点
+        TreeNode cur = node;
+        // 上次访问过的节点，初始化可为null
+        TreeNode lastVisited = node;
+        while (cur != null || !stack.isEmpty()) {
+            // 还是先一直往左走
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            // 查看栈顶的节点
+            cur = stack.peek();
+            // 如果其右子树是空的或者上次访问的节点是他的右子树
+            // 则进行输出，并更新lastVisited
+            // 弹出这个节点，并把当前节点设置为null，以便下次继续访问栈顶节点
+            if (cur.right == null || cur.right == lastVisited) {
+                System.out.printf("%d ", cur.val);
+                lastVisited = cur;
+                stack.pop();
+                cur = null;
+            // 没有访问过，则继续往右考察
+            } else {
+                cur = cur.right;
+            }
+        }
+    }
+
+    /**
+     * 二叉树中序遍历
+     */
+    public static void midorderTraversal(TreeNode node) {
+        // 与前序遍历相似
+        // 不过在考察时先不输出当前的节点
+        // 直到左子树为空时再访问当前的节点
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = node;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            if (!stack.isEmpty()) {
+                cur = stack.pop();
+                System.out.printf("%d ", cur.val);
+                cur = cur.right;
+            }
+        }
+    }
+
+    /**
+     * 二叉树的前序遍历
+     */
+    public static void preorderTraversal(TreeNode node) {
+        // 栈用于记录访问的节点，类似调用栈
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        // 表示当前的节点
+        TreeNode cur = node;
+        // 当前节点为空，且调用栈中无节点
+        while (cur != null || !stack.isEmpty()) {
+            // 当前节点不为空，访问它
+            // 放入栈中，以便后面回溯
+            // 一直往左走，都访问一遍
+            while (cur != null) {
+                System.out.printf("%d ", cur.val);
+                stack.push(cur);
+                cur = cur.left;
+            }
+            // 此时当前节点已经无左节点，
+            // 弹出一个准备访问它的右节点
+            if (!stack.isEmpty()) {
+                cur = stack.pop();
+                cur = cur.right;
+            }
+        }
     }
 
     // 插入排序
@@ -49,6 +152,7 @@ public class Main {
             ans[pos++] = right[j++];
         return ans;
     }
+
     /**
      * 归并排序
      */
