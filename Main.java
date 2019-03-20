@@ -12,7 +12,8 @@ public class Main {
         // insertSort(nums);
         // System.out.println(Arrays.toString(nums));
         // testTraversal();
-        testTopK();
+        // testTopK();
+        testNorder();
     }
 
     public static void testTopK() {
@@ -52,7 +53,7 @@ public class Main {
         } else {
             return nums[pos];
         }
-    
+
     }
 
     public static void testTraversal() {
@@ -73,6 +74,63 @@ public class Main {
             this.left = left;
             this.right = right;
             this.val = val;
+        }
+    }
+
+    static class Node {
+        public int val;
+        public List<Node> children;
+
+        public Node(int val, List<Node> children) {
+            this.val = val;
+            this.children = children;
+        }
+    }
+
+    public static void testNorder() {
+        List<Node> list3 = new ArrayList<>();
+        list3.add(new Node(5, null));
+        list3.add(new Node(6, null));
+        List<Node> list2 = new ArrayList<>();
+        List<Node> list1 = new ArrayList<>();
+        list1.add(new Node(7, null));
+        list2.add(new Node(2, list3));
+        list2.add(new Node(3, list1));
+        List<Node> list0 = new ArrayList<>();
+        list0.add(new Node(8, null));
+        list2.add(new Node(4, list0));
+        Node root = new Node(1, list2);
+        NafterorederTraversal(root);
+        NpreorederTraversal(root);
+    }
+
+    // N叉树后序遍历
+    public static void NafterorederTraversal(Node node) {
+        // 是二叉树的拓展
+        // 考察栈顶的节点
+        // 考察一个节点无子节点，
+        // 或者上次访问的节点是子节点最后一个，则出栈访问该节点
+        // 否则把其所有的节点倒序入栈（为了可正序出栈）
+        // 继续下一次遍历
+        if (node == null) {
+            return;
+        }
+        LinkedList<Node> stack = new LinkedList<>();
+        Node cur = node;
+        Node lastVisited = node;
+        stack.push(node);
+        while (!stack.isEmpty()) {
+            cur = stack.peek();
+            if (cur.children == null || cur.children.isEmpty()
+                    || lastVisited == cur.children.get(cur.children.size() - 1)) {
+                System.out.printf("%d ", cur.val);
+                lastVisited = cur;
+                stack.pop();
+                continue;
+            }
+            for (int i = cur.children.size() - 1; i >= 0; i--) {
+                stack.push(cur.children.get(i));
+            }
         }
     }
 
@@ -129,10 +187,35 @@ public class Main {
             }
         }
     }
+    // N叉树的前序遍历
+    public static void NpreorederTraversal(Node root) {
+        // 思路同N叉树的后序遍历，不过把访问放在前面了
+        // 节点不为空时访问该节点，并将节点的子节点全部倒序放入栈中
+        // 每次取出栈顶元素进行访问
+        // 注意当子节点为空时，需要把cur设置为空，避免无法结束循环
+        if (root == null) {
+            return;
+        }
+        LinkedList<Node> stack = new LinkedList<>();
+        Node cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            if (cur != null) {
+                System.out.printf("%d ", cur.val);
+                if (cur.children != null && !cur.children.isEmpty()) {
+                    for (int i = cur.children.size() - 1; i >= 0; i--) {
+                        stack.push(cur.children.get(i));
+                    }
+                }else{
+                    cur = null;
+                }
+            }
+            if (!stack.isEmpty()) {
+                cur = stack.pop();
+            }
+        }
+    }
 
-    /**
-     * 二叉树的前序遍历
-     */
+    // 二叉树的前序遍历
     public static void preorderTraversal(TreeNode node) {
         // 栈用于记录访问的节点，类似调用栈
         LinkedList<TreeNode> stack = new LinkedList<>();
