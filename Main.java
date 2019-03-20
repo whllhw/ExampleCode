@@ -5,13 +5,54 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Math.ceil(1.1f));
-        int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
+        // int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
         // int[] b = mergeSort(a);
         // System.out.println(Arrays.toString(b));
         // int[] nums = { 2, 3, 1, 6, 3, 2, 1 };
         // insertSort(nums);
         // System.out.println(Arrays.toString(nums));
-        testTraversal();
+        // testTraversal();
+        testTopK();
+    }
+
+    public static void testTopK() {
+        for (int i = 1; i < 1000000; i++) {
+            int[] nums = randomList(i);
+            int K = (int) (Math.random() * i) + 1;
+            assert K > 0 && K <= i;
+            int ans = topK(nums, K, 0, nums.length - 1);
+            int[] nums2 = Arrays.copyOf(nums, nums.length);
+            Arrays.sort(nums2);
+            if (ans != nums2[K - 1]) {
+                System.out.printf("error: %s topK %d %d\n", Arrays.toString(nums2), ans, nums2[K - 1]);
+            }
+        }
+    }
+
+    // 快速排序算法找topK元素
+    // 与快排是同一作者，和快排类似的思维，也是不稳定算法
+    // 复杂度最坏O(n^2)平均O(nlgn)
+    public static int topK(int[] nums, int K, int left, int right) {
+        if (left == right) {
+            return nums[left];
+        }
+        // 获取划分的位置
+        // 这样前pos个元素都是小于pivot的，得到前pos小元素
+        int pos = partition(nums, left, right);
+        // 得到当前划分点与left的距离
+        int dis = pos - left + 1;
+        // 有三种情况，
+        // 划分点大于K，则第K大的元素在划分点的左边，递归调用 left pos-1 即可
+        // 划分点等于K，则划分点就是第K大的元素
+        // 划分点小于K，第K大元素在右边，递归调用 pos+1 right，注意K的位置变为K-dis
+        if (dis > K) {
+            return topK(nums, K, left, pos - 1);
+        } else if (dis < K) {
+            return topK(nums, K - dis, pos + 1, right);
+        } else {
+            return nums[pos];
+        }
+    
     }
 
     public static void testTraversal() {
@@ -60,7 +101,7 @@ public class Main {
                 lastVisited = cur;
                 stack.pop();
                 cur = null;
-            // 没有访问过，则继续往右考察
+                // 没有访问过，则继续往右考察
             } else {
                 cur = cur.right;
             }
@@ -180,7 +221,7 @@ public class Main {
     }
 
     public static int partition(int[] nums, int l, int r) {
-        if (l > r) {
+        if (l >= r) {
             return -1;
         }
         // 选中中轴值为第一个
@@ -213,7 +254,7 @@ public class Main {
                 break;
             }
         }
-        System.out.printf("i:%d j:%d\n", i, j);
+        // System.out.printf("i:%d j:%d\n", i, j);
         // 相交的情况就j直接和pivot值交换
         // 此时j左边的全部都大于了pivot，i右边都全部小于pivot
         // 完成了划分操作
