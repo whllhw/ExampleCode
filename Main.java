@@ -17,7 +17,10 @@ public class Main {
         // testTopK();
         // testNorder();
         // testbubbleSort();
-        String s = longestPalindrome("bab");
+        // String s = longestPalindrome("bab");
+        // testHeapSort();
+        heapSort(nums);
+        System.out.println(Arrays.toString(nums));
     }
 
     private static int expandAround(String s, int left, int right) {
@@ -34,6 +37,7 @@ public class Main {
         // (j-1) - (i+1) + 1
         return j - i - 1;
     }
+
     // 最长回文子串
     // 中心拓展法
     public static String longestPalindrome(String s) {
@@ -66,7 +70,117 @@ public class Main {
 
     // 桶排序
 
+
+    public static void testHeapSort() {
+        for (int i = 1; i < 10000; i++) {
+            int[] nums = randomList(i);
+            int[] nums2 = Arrays.copyOf(nums, nums.length);
+            // heapSortWithCopyArray(nums);
+            heapSort(nums);
+            Arrays.sort(nums2);
+            if (!Arrays.equals(nums, nums2)) {
+                System.out.println(Arrays.toString(nums));
+            }
+        }
+    }
+    // 调整为最大堆
+    public static void heap(int[] nums, int start, int end) {
+        // 思路：输入当前节点的位置
+        // 获取左右子节点，先获取两个之中最大的节点
+        // 最大的子节点与当前节点比较，若当前节点大于子节点则结束调整
+        // 否则（小于子节点）交换两个节点，
+        // 并把当前节点指针变为子节点，继续下次调整
+        int a = start * 2 + 1;
+        if (a > end) {
+            return;
+        }
+        int b = start * 2 + 2;
+        if (b <= end && nums[a] < nums[b]) {
+            a = b;
+        }
+        if (nums[start] > nums[a]) {
+            return;
+        }
+        int x = nums[start];
+        nums[start] = nums[a];
+        nums[a] = x;
+        heap(nums, a, end);
+    }
+
     // 堆排序
+    // 时间复杂度O(nlogn) 空间复杂度O(1)
+    public static void heapSort(int[] nums) {
+        // 思路：原地调整建立最大值堆
+        // （注意从len/2开始）
+        // 建立完后，开始输出根节点（与最后面的元素交换）
+        // 堆大小减1，并调整堆。直到只有一个元素时排序结束
+        int len = nums.length;
+        int s = len / 2;
+        for (int i = s; i >= 0; i--) {
+            heap(nums, i, len - 1);
+        }
+        for (int i = len - 1; i > 0; i--) {
+            int temp = nums[i];
+            nums[i] = nums[0];
+            nums[0] = temp;
+            heap(nums, 0, i - 1);
+        }
+
+    }
+
+    // 使用额外空间的堆排序（时间复杂度O(nlogn)空间O(n)）
+    public static void heapSortWithCopyArray(int[] nums) {
+        // 1. 堆是完全二叉树
+        // 2. 每个节点都要小于等于其子节点（最小堆）
+        // 3. 每个节点都要大于等于其子节点（最大堆）
+        // -------------------------------------
+        // 数组模拟完全二叉树
+        // i节点的左节点 2*i+1，右节点 2*i+2
+        // i的父节点 (i-1)/2
+        // -------------------------------------
+        // 先建立堆（需要不断调整使变化仍为堆）
+        int[] heap = new int[nums.length];
+        int size = 0;
+        for (int i = 0; i < nums.length; i++) {
+            int j = size++;
+            // 调整堆，比较父节点，如果父节点大于当前节点，则交换两个节点
+            // 并改变当前的指针，进入下次循环
+            // 否则完成此次调整
+            while (j > 0) {
+                int p = (j - 1) / 2;
+                if (heap[p] > nums[i]) {
+                    heap[j] = heap[p];
+                    j = p;
+                } else {
+                    break;
+                }
+            }
+            heap[j] = nums[i];
+        }
+        // 出堆的过程
+        // 每次把根节点输出到数组里
+        // 然后对比其子节点，选择最小的一个替换根节点的位置
+        // 设置当前节点为子节点，继续向下调整，直到当前节点小于其子节点
+        int pos = 0;
+        while (size > 0) {
+            int cur = 0;
+            nums[pos++] = heap[cur];
+            int x = heap[--size];
+            while (cur * 2 + 1 < size) {
+                int a = cur * 2 + 1;
+                int b = cur * 2 + 2;
+                if (b < size && heap[b] < heap[a]) {
+                    a = b;
+                }
+                if (heap[a] >= x) {
+                    break;
+                }
+                heap[cur] = heap[a];
+                cur = a;
+            }
+            heap[cur] = x;
+        }
+    }
 
     public static void testbubbleSort() {
         for (int i = 1; i < 10000; i++) {
