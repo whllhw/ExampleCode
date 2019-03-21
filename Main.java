@@ -16,13 +16,57 @@ public class Main {
         // testQuickSort();
         // testTopK();
         // testNorder();
-        testbubbleSort();
+        // testbubbleSort();
+        String s = longestPalindrome("bab");
+    }
+
+    private static int expandAround(String s, int left, int right) {
+        // 当left与right相等，则是求以left right为中心的奇数长度的回文串长度。
+        // 最小返回1（单个字符）
+        // 当left right是连着的字符时，求解的是偶数个长度
+        int i = left;
+        int j = right;
+        while (j < s.length() && i >= 0 && s.charAt(i) == s.charAt(j)) {
+            i--;
+            j++;
+        }
+        // 注意此处需要返回长度，去掉最后一次的自增值
+        // (j-1) - (i+1) + 1
+        return j - i - 1;
+    }
+    // 最长回文子串
+    // 中心拓展法
+    public static String longestPalindrome(String s) {
+        // 暴力从0开始拓展出回文串
+        // 分为奇数和偶数的情况
+        // 奇数：求解以i为中心的回文串长度
+        // 偶数：求解以i，i+1为中心的回文串长度
+        // 还应对应求解出起始位置、结束位置
+        // ---------------------------
+        // 归纳出奇数、偶数的start, end位置
+        if (s.length() == 0) {
+            return "";
+        }
+        int start = 0;
+        int stop = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expandAround(s, i, i + 1);
+            int len2 = expandAround(s, i, i);
+            int len = Math.max(len1, len2);
+            if (len > stop - start) {
+                start = i - (len - 1) / 2;
+                stop = i + len / 2;
+            }
+        }
+
+        String sb = s.substring(start, stop + 1);
+        System.out.println(sb);
+        return sb;
     }
 
     // 桶排序
 
     // 堆排序
-
 
     public static void testbubbleSort() {
         for (int i = 1; i < 10000; i++) {
@@ -44,6 +88,7 @@ public class Main {
     // 冒泡排序，复杂度O（n^2）
     // 不停地比较，把最大的数冒到最后去
     // 可添加一个改动位，以后的数组都未改动时可直接退出循环
+    // 最优情况是数组已经有序，复杂度O（n）
     public static void bubbleSort(int[] nums) {
         boolean flag = true;
         for (int i = 0; i < nums.length && flag; i++) {
