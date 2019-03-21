@@ -5,15 +5,58 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Math.ceil(1.1f));
-        // int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
+        int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
         // int[] b = mergeSort(a);
         // System.out.println(Arrays.toString(b));
         // int[] nums = { 2, 3, 1, 6, 3, 2, 1 };
         // insertSort(nums);
         // System.out.println(Arrays.toString(nums));
+        // testKMP();
         // testTraversal();
+        // testQuickSort();
         // testTopK();
-        testNorder();
+        // testNorder();
+        testbubbleSort();
+    }
+
+    // 桶排序
+
+    // 堆排序
+
+
+    public static void testbubbleSort() {
+        for (int i = 1; i < 10000; i++) {
+            int[] nums = randomList(i);
+            int[] nums2 = Arrays.copyOf(nums, nums.length);
+            bubbleSort(nums);
+            // quickSort(nums, 0, nums.length - 1);
+            Arrays.sort(nums2);
+            int j = 0;
+            while (j < nums.length && nums[j] == nums2[j])
+                j++;
+            if (j != nums.length) {
+                System.out.println(Arrays.toString(nums));
+            }
+            // System.out.println(i);
+        }
+    }
+
+    // 冒泡排序，复杂度O（n^2）
+    // 不停地比较，把最大的数冒到最后去
+    // 可添加一个改动位，以后的数组都未改动时可直接退出循环
+    public static void bubbleSort(int[] nums) {
+        boolean flag = true;
+        for (int i = 0; i < nums.length && flag; i++) {
+            flag = false;
+            for (int j = 1; j < nums.length - i; j++) {
+                if (nums[j - 1] > nums[j]) {
+                    int temp = nums[j - 1];
+                    nums[j - 1] = nums[j];
+                    nums[j] = temp;
+                    flag = true;
+                }
+            }
+        }
     }
 
     public static void testTopK() {
@@ -187,6 +230,7 @@ public class Main {
             }
         }
     }
+
     // N叉树的前序遍历
     public static void NpreorederTraversal(Node root) {
         // 思路同N叉树的后序遍历，不过把访问放在前面了
@@ -205,7 +249,7 @@ public class Main {
                     for (int i = cur.children.size() - 1; i >= 0; i--) {
                         stack.push(cur.children.get(i));
                     }
-                }else{
+                } else {
                     cur = null;
                 }
             }
@@ -277,9 +321,7 @@ public class Main {
         return ans;
     }
 
-    /**
-     * 归并排序
-     */
+    // 归并排序
     public static int[] mergeSort(int[] nums) {
         // 数组个数小于等于 1 是认为是有序的
         if (nums == null || nums.length <= 1) {
@@ -346,11 +388,31 @@ public class Main {
         return j;
     }
 
+    // 快速排序
     public static void quickSort(int[] nums, int l, int r) {
         if (l < r) {
-            int p = partition(nums, l, r);
-            quickSort(nums, l, p);
-            quickSort(nums, p + 1, r);
+            // 模拟系统调用的栈
+            // 分别压栈右左的索引
+            // 随后出栈成左右
+            LinkedList<Integer> stack = new LinkedList<>();
+            stack.push(r);
+            stack.push(l);
+            while (!stack.isEmpty()) {
+                int left = stack.pop();
+                int right = stack.pop();
+                int p = partition(nums, left, right);
+                if (p - 1 > left) {
+                    stack.push(p - 1);
+                    stack.push(left);
+                }
+                if (p + 1 < right) {
+                    stack.push(right);
+                    stack.push(p + 1);
+                }
+            }
+            // int p = partition(nums, l, r);
+            // quickSort(nums, l, p - 1);
+            // quickSort(nums, p + 1, r);
         }
     }
 
@@ -378,6 +440,7 @@ public class Main {
         }
     }
 
+    // 生成指定大小的随机元素
     public static int[] randomList(int len) {
         int[] ans = new int[len];
         for (int i = 0; i < len; i++) {
@@ -421,7 +484,7 @@ public class Main {
         return merge;
     }
 
-    public void testKMP() {
+    public static void testKMP() {
         String s1 = "9abcabaabc";
         String s2 = "abcaba";
         System.out.println(KMP(s1.toCharArray(), 0, s2.toCharArray()));
@@ -461,6 +524,7 @@ public class Main {
         return next;
     }
 
+    // KMP算法，模式匹配
     public static int KMP(char[] S, int pos, char[] T) {
         int i = pos;
         int j = 1;
