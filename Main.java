@@ -19,8 +19,11 @@ public class Main {
         // testbubbleSort();
         // String s = longestPalindrome("bab");
         // testHeapSort();
-        heapSort(nums);
-        System.out.println(Arrays.toString(nums));
+        // heapSort(nums);
+        // System.out.println(Arrays.toString(nums));
+        // testMergeSort();
+        // testCountSort();
+        testShellSort();
     }
 
     private static int expandAround(String s, int left, int right) {
@@ -68,8 +71,109 @@ public class Main {
         return sb;
     }
 
-    // 桶排序
+    // * ******************非比较排序**********************
+    // 1.计数排序
+    // 2.基数排序
+    // 3.桶排序
+    // * 基于比较的排序最快O(nlogn)（决策树模型）
+    // * 用非比较的排序能到线性时间，但需要符合一定的假设
+    // * *************************************************
+    // 1.计数排序
+    // ***************************************************
+    // 2.基数排序（多关键字排序）
+    //
+    // ***************************************************
+    // 3.桶排序（数据结构类似hashMap，存放桶的数组，桶内元素为数组）
+    // 复杂度O(n+C)
+    // 1）计算每个关键字的桶映射O(n)
+    // 2）在桶内进行排序，求和O(ni*logni)。决定性能好坏。
+    // 空间复杂度O(n+m)，保持m个数组引用
+    // 假设数均匀分布在一个范围内，把这一个范围划为几个桶
+    // 以映射函数（f(i)=nums[i]/k,k^2=nums.length）把数i映射到第f(i)个桶内
+    // 对桶内元素使用快排等算法
+    // 依次输出桶内元素即有序
+    // 应用：海量数据中排序
+    // 例：500万高考分数排序（计数排序）
+    // 分析：若采用基于比较排序的算法5_000_000*log(5_000_000)=1.12亿次
+    // 但是分数都是在100，900之间，可采用桶排序，在毫秒时间内完成
+    // 建立801个桶，分数仍进f(score)=score-100的桶内，只需要500W次
+    // 然后依次输出每个桶内个数，即可得到有序序列。
+    // 局限性：数据有特殊要求，数值的范围要小。
+    // ***************************************************
+    // 总结
+    /**
+     * <code>
+     String DONOTTOUCH = """
+      algorithm    |best       |average    |worst   |worst(space)
+      quickSort    |O(nlogn)               |O(n^2)  |O(logn)
+      mergeSort    |O(nlogn)                        |O(n)
+      countSort    |O(n)       |O(nlogn)            |O(n)
+      heapSort     |O(nlogn)                        |O(n)
+      bubbleSort   |O(n)       |O(n^2)              |O(1)
+      insertionSort|O(n)       |O(n^2)              |O(1)
+      selectionSort|O(n^2)                          |O(1)
+      shellSort    |O(n)       |O((nlogn)^2)        |O(1)
+      bucketSort   |O(n)       |O(n+k)    |O(n^2)   |O(n)
+      radixSort    |O(nk)                           |O(n+k)
+      """;
+     </code>
+     */
+    // 稳定性（比较次数）
+    // 不稳定：选择、快速、希尔、堆
+    // 稳定：冒泡、插入、归并、基数
 
+    // 计数排序
+    // 复杂度O(n+k)，空间O(max-min+1)
+    // 范围固定在[0,k]的数据，利用地址偏移，不需要比较
+    // 思路：算出数组最值，得到计数数组大小
+    // 遍历整个数组，并计数
+    // 预处理，统计数组（有多少个小于等于的 c(i) += c(i-1)）
+    // 输出统计值，ans[--counter[nums[i]-min]] = nums[i]
+    // 注意输出后自减，以便放在下一个位置
+    // 用途：排序字符串、年龄排序
+    // 拓展：预处理后，O(1)得到区间[a,b]内的个数（counter[b] - counter[a-1]）
+    public static void countSort(int[] nums) {
+        int[] ans = new int[nums.length];
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            min = Math.min(min, nums[i]);
+            max = Math.max(max, nums[i]);
+        }
+        int[] counter = new int[max - min + 1];
+        for (int i = 0; i < nums.length; i++) {
+            counter[nums[i] - min] += 1;
+        }
+        for (int i = 1; i < counter.length; i++) {
+            counter[i] += counter[i - 1];
+        }
+        // for (int i = nums.length - 1; i >= 0; i--) {
+        for (int i = 0; i < nums.length; i++) {
+            ans[--counter[nums[i] - min]] = nums[i];
+        }
+        System.arraycopy(ans, 0, nums, 0, ans.length);
+        // int pos = 0;
+        // for (int i = 0; i < counter.length; i++) {
+        // if (counter[i] > 0) {
+        // for (int j = 0; j < counter[i]; j++)
+        // nums[pos++] = min + i;
+        // }
+        // }
+    }
+
+    public static void testCountSort() {
+        for (int i = 1; i < 10000; i++) {
+            int[] list = randomList(i);
+            int[] list2 = Arrays.copyOf(list, list.length);
+            countSort(list);
+            Arrays.sort(list2);
+            if (!Arrays.equals(list, list2)) {
+                System.out.println(Arrays.toString(list));
+                System.out.println(Arrays.toString(list2));
+            }
+
+        }
+    }
 
     public static void testHeapSort() {
         for (int i = 1; i < 10000; i++) {
@@ -83,6 +187,7 @@ public class Main {
             }
         }
     }
+
     // 调整为最大堆
     public static void heap(int[] nums, int start, int end) {
         // 思路：输入当前节点的位置
@@ -109,6 +214,11 @@ public class Main {
 
     // 堆排序
     // 时间复杂度O(nlogn) 空间复杂度O(1)
+    // 原地排序，复杂度与输入无关，不稳定（比较次数不确定）
+    // 保持堆的性质 O(logn)
+    // 建立堆（O(n)）
+    // 用途：TopK问题，维护k个大小的空间
+    // 延伸：优先级队列（作业调度）
     public static void heapSort(int[] nums) {
         // 思路：原地调整建立最大值堆
         // （注意从len/2开始）
@@ -199,7 +309,7 @@ public class Main {
         }
     }
 
-    // 冒泡排序，复杂度O（n^2）
+    // 冒泡排序，复杂度O（n^2）空间复杂度O(1)
     // 不停地比较，把最大的数冒到最后去
     // 可添加一个改动位，以后的数组都未改动时可直接退出循环
     // 最优情况是数组已经有序，复杂度O（n）
@@ -443,7 +553,56 @@ public class Main {
         }
     }
 
+    // 希尔排序（改进版插入排序）
+    // 解决插入算法步进恒为1，增大步长序列使数据基本有序，
+    // 最后使用插入排序时能够更快
+    // 增大步长序列，每次取（n/=2）
+    // （对每一列的数据进行插入）
+    // 10 14 73 25 23
+    // 13 27 94 33 39
+    // 25 59 94 65 82
+    // 步长：5
+    // 10 14 73
+    // 25 23 13
+    // 27 94 33
+    // 39 25 59
+    // 94 65 82
+    // 步长：3
+    // 缩小步长为1，即是插入排序
+    public static void shellSort(int[] nums) {
+        // int[] steps = { 4, 2, 1 };
+        int step = nums.length / 2;
+        while (step > 0) {
+            for (int j = 1; j < nums.length; j += step) {
+                int i = j;
+                while (i >= step && nums[i - step] > nums[i]) {
+                    int temp = nums[i - step];
+                    nums[i - step] = nums[i];
+                    nums[i] = temp;
+                    i-=step;
+                }
+            }
+            step /= 2;
+        }
+    }
+
+    public static void testShellSort() {
+        for (int i = 1; i < 10000; i++) {
+            int[] list = randomList(10*i);
+            int[] list2 = Arrays.copyOf(list, list.length);
+            shellSort(list);
+            Arrays.sort(list2);
+            if (!Arrays.equals(list, list2)) {
+                System.out.println(Arrays.toString(list));
+                System.out.println(Arrays.toString(list2));
+            }
+            System.out.println(i);
+        }
+    }
+
     // 插入排序
+    // 时间复杂度O(n^2)空间复杂度O(1)
+    // 对于有序序列复杂度为线性，最坏情况数组是逆序
     public static void insertSort(int[] nums) {
         // 对于有序序列复杂度为O（n）（检查一遍有序即可）
         // 步骤
@@ -460,50 +619,62 @@ public class Main {
         }
     }
 
-    public static int[] merge(int[] left, int[] right) {
-        int[] ans = new int[left.length + right.length];
-        int i = 0, j = 0, pos = 0;
+    public static void testMergeSort() {
+        int[] nums = randomList(1024);
+        mergeSort(nums, 0, nums.length - 1);
+        System.out.println(Arrays.toString(nums));
+        System.out.println(counter);
+    }
+
+    public static int counter = 0;
+
+    public static void merge(int[] nums, int left, int mid, int right) {
+        counter++;
+        int[] ans = new int[right - left + 1];
+        int i = left, j = mid + 1, pos = 0;
         // 由于两个数组已经是有序的了，只需要比较开头的元素大小就能确定位置
         // 比较次数最多情况是两个数组交错，次数为2n-1
         // 最少为一个数组全部小于第二个数组，次数为n
-        while (i < left.length && j < right.length) {
-            if (left[i] > right[j]) {
-                ans[pos++] = right[j++];
+        while (i <= mid && j <= right) {
+            if (nums[i] > nums[j]) {
+                ans[pos++] = nums[j++];
             } else {
-                ans[pos++] = left[i++];
+                ans[pos++] = nums[i++];
             }
         }
-        while (i < left.length)
-            ans[pos++] = left[i++];
-        while (j < right.length)
-            ans[pos++] = right[j++];
-        return ans;
+        while (i <= mid)
+            ans[pos++] = nums[i++];
+        while (j <= right)
+            ans[pos++] = nums[j++];
+        for (i = 0; i < ans.length; i++)
+            nums[left + i] = ans[i];
     }
 
     // 归并排序
-    public static int[] mergeSort(int[] nums) {
+    // 时间复杂度O(nlogn) 空间复杂度O(n)+O(logn)
+    // 不断地把数组平分，分到只有一个元素时认为有序开始归并
+    // 不论数组的有序情况，每次都合并消耗O(n)时间，进行O(logn)次合并
+    // 因此是稳定的算法
+    // 由于是递归（最大深度logn）和复制数组（最大n），空间复杂度O(n+logn)
+    public static void mergeSort(int[] nums, int left, int right) {
         // 数组个数小于等于 1 是认为是有序的
-        if (nums == null || nums.length <= 1) {
-            return nums;
+        if (left >= right) {
+            return;
         }
         // 分：
         // 把原数组分成等量的两份
         // 分别调用自身进行排序
         // 归并：
         // 调用归并把两个排好序的数组合并成一个
-        int mid = nums.length / 2;
-        int[] na = new int[mid];
-        int[] nb = new int[nums.length - mid];
-        int pos = 0;
-        for (int i = 0; i < mid; i++)
-            na[i] = nums[pos++];
-        for (int i = 0; i < nums.length - mid; i++)
-            nb[i] = nums[pos++];
-        int[] left = mergeSort(na);
-        int[] right = mergeSort(nb);
-        return merge(left, right);
+        int mid = (right + left) / 2;
+        mergeSort(nums, left, mid);
+        mergeSort(nums, mid + 1, right);
+        merge(nums, left, mid, right);
     }
 
+    // 划分从l到r的数组
+    // 小于pivot值的放在左半部分，大于pivot值放在右半部分
+    // 最后返回pivot的位置
     public static int partition(int[] nums, int l, int r) {
         if (l >= r) {
             return -1;
@@ -548,30 +719,34 @@ public class Main {
     }
 
     // 快速排序
+    // 时间复杂度O(nlogn)空间复杂度O(logn)递归树最高logn
+    // 不稳定的算法
+    // 最坏情况：顺序或逆序O(n^2)
+    // 最好情况：O(n)（每次都选到最中间的元素，平分整个数组）
     public static void quickSort(int[] nums, int l, int r) {
         if (l < r) {
             // 模拟系统调用的栈
             // 分别压栈右左的索引
             // 随后出栈成左右
-            LinkedList<Integer> stack = new LinkedList<>();
-            stack.push(r);
-            stack.push(l);
-            while (!stack.isEmpty()) {
-                int left = stack.pop();
-                int right = stack.pop();
-                int p = partition(nums, left, right);
-                if (p - 1 > left) {
-                    stack.push(p - 1);
-                    stack.push(left);
-                }
-                if (p + 1 < right) {
-                    stack.push(right);
-                    stack.push(p + 1);
-                }
-            }
-            // int p = partition(nums, l, r);
-            // quickSort(nums, l, p - 1);
-            // quickSort(nums, p + 1, r);
+            // LinkedList<Integer> stack = new LinkedList<>();
+            // stack.push(r);
+            // stack.push(l);
+            // while (!stack.isEmpty()) {
+            // int left = stack.pop();
+            // int right = stack.pop();
+            // int p = partition(nums, left, right);
+            // if (p - 1 > left) {
+            // stack.push(p - 1);
+            // stack.push(left);
+            // }
+            // if (p + 1 < right) {
+            // stack.push(right);
+            // stack.push(p + 1);
+            // }
+            // }
+            int p = partition(nums, l, r);
+            quickSort(nums, l, p - 1);
+            quickSort(nums, p + 1, r);
         }
     }
 
