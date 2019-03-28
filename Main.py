@@ -1,4 +1,4 @@
-
+#encoding:utf-8
 
 def quick_sort(lst):
     if len(lst) <= 1:
