@@ -42,6 +42,7 @@ public class TestUtil {
             }
         }
     }
+
     /**
      * HashMap、HashTable的效率比较
      */
@@ -60,8 +61,8 @@ public class TestUtil {
         }
         long t4 = System.currentTimeMillis();
 
-        System.out.printf("hashTable:%d\n",t2 - t1);
-        System.out.printf("hashMap:%d\n",t4 - t3);
+        System.out.printf("hashTable:%d\n", t2 - t1);
+        System.out.printf("hashMap:%d\n", t4 - t3);
     }
 
     public static void testWeakHashMap() {
@@ -76,10 +77,9 @@ public class TestUtil {
             wk.size();
         }
     }
+
     /**
-     * 第一个不重复字符
-     * 实现
-     * LinkedHashMap，链表+HashMap，节点中有前后两个指针，指向前一个节点和后一个节点
+     * 第一个不重复字符 实现 LinkedHashMap，链表+HashMap，节点中有前后两个指针，指向前一个节点和后一个节点
      * 可用于记录插入顺序、实现LRU算法
      */
     public static char testLinkedHashMap(String s) {
@@ -104,6 +104,7 @@ public class TestUtil {
         }
         return 0;
     }
+
     /**
      * 第一个不重复的字符
      */
@@ -128,6 +129,7 @@ public class TestUtil {
         }
         return -1;
     }
+
     /**
      * 实现最小栈
      */
@@ -160,7 +162,7 @@ public class TestUtil {
             }
         }
 
-        public int top(){
+        public int top() {
             int e = stack.peek();
             if (e >= 0) {
                 return e + min;
@@ -168,10 +170,12 @@ public class TestUtil {
                 return min;
             }
         }
+
         public int getMin() {
             return min;
         }
     }
+
     public static void testMinStack(String[] args) {
         // String s = "qwersadwqeq";
         // System.out.println(testLinkedHashMap(s));
@@ -186,20 +190,36 @@ public class TestUtil {
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         // testHashTable();
-        Thread t1 = new Thread(new Runnable(){
-            @Override
-            public void run(){
-                while(true){
-                    System.out.println("1");
-                }
-            }
-        });
-        t1.setDaemon(true);
-        t1.start();
-
+        // Thread t1 = new Thread(new Runnable(){
+        // @Override
+        // public void run(){
+        // while(true){
+        // System.out.println("1");
+        // }
+        // }
+        // });
+        // t1.setDaemon(true);
+        // t1.start();
+        // Arrays.copyOf()
     }
 
+}
 
+class FileTransRunnable implements Runnable {
+    private String fileName;
+
+    public FileTransRunnable(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void run() {
+        System.out.println("传送" + fileName);
+        try {
+            Thread.sleep(1000 * 10);
+        } catch (Exception ex) {
+        }
+        System.out.println(fileName + "传送完毕");
+    }
 }

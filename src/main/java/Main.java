@@ -3,9 +3,12 @@ import java.io.*;
 
 public class Main {
 
+    private static PrintStream out = System.out;
+
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Math.ceil(1.1f));
-        int[] nums = { 1, 3, 2, -1, 2, 0, 10, 3, 4, 5 };
+        out.println("started");
+        int[] nums = {1, 3, 2, -1, 2, 0, 10, 3, 4, 5};
         // int[] b = mergeSort(a);
         // System.out.println(Arrays.toString(b));
         // int[] nums = { 2, 3, 1, 6, 3, 2, 1 };
@@ -23,7 +26,139 @@ public class Main {
         // System.out.println(Arrays.toString(nums));
         // testMergeSort();
         // testCountSort();
-        testShellSort();
+        // testShellSort();
+//        out.println(getAllCombinationWithFor(new int[]{1, 2, 3}));
+//        out.println(permutation(new int[]{1, 1, 2}, false));
+    }
+
+    /**
+     * 生成全排列数
+     */
+    static List<List<Integer>> permutation(int[] nums, boolean dup) {
+        List<List<Integer>> ans = new ArrayList<>();
+        doPermutation(nums, 0, ans, dup);
+        return ans;
+    }
+
+    static void doPermutation(int[] nums, int start, List<List<Integer>> ans, boolean allowedDup) {
+        // 思路
+        // 下一个排列数可由当前的排列数交换依次交换位置生成
+        // 结束条件：已生成最大长度
+        // 本级返回
+        // 本级做的事情:
+        // 对于start指针，不停地与后面的数进行交换(i from start to nums.length)
+        // 交换后即可认为长度+1
+        // 都是往后面的数进行交换，不会出现重复的数
+        // 复杂度O(n^2) 空间复杂度、栈空间O(n)
+        if (start == nums.length) {
+            List<Integer> temp = new ArrayList<>();
+            for (int i = 0; i < start; i++) {
+                temp.add(nums[i]);
+            }
+            ans.add(temp);
+        }
+        for (int i = start; i < nums.length; i++) {
+            if (allowedDup || !isRepeat(nums, start, i)) {
+                swap(nums, i, start);
+                doPermutation(nums, start + 1, ans, allowedDup);
+                swap(nums, i, start);
+            }
+        }
+    }
+
+    static boolean isRepeat(int[] nums, int pos, int end) {
+        for (int i = pos; i < end; i++) {
+            if (nums[end] == nums[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static void swap(int[] nums, int x, int y) {
+        int temp = nums[x];
+        nums[x] = nums[y];
+        nums[y] = temp;
+    }
+
+    /**
+     * 生成组合
+     */
+    static List<List<Integer>> getAllCombinationWithFor(int[] arr) {
+        // 思路：通过位图生成
+        // 共有2^n-1个组合数，001 010 011 100 101 110 111
+        // 每位为1表示取该元素，为0表示不取，依次遍历即可
+        List<List<Integer>> ans = new ArrayList<>();
+        int n = 1 << arr.length;
+        for (int i = 1; i < n; i++) {
+            List<Integer> temp = new ArrayList<>();
+            for (int j = 0; j < arr.length; j++) {
+                if ((i & (1 << j)) >= 1) {
+                    temp.add(arr[j]);
+                }
+            }
+            ans.add(temp);
+        }
+        return ans;
+    }
+
+    /**
+     * 生成组合数
+     */
+    static List<List<Integer>> getAllCombination(int[] arr) {
+        // 思路
+        // 组合数共有2^n-1个数。可看成：前面生成的元素序列+当前新的元素
+        // 例如: 1,2,3
+        // {1}
+        // +2      {1,2}       {2}
+        // +3
+        // {1,3}  {1,2,3}      {2,3}    {3}
+        // 注意其添加的顺序
+        // 复杂度O(n^2) 空间复杂度O(2^n)
+        List<List<Integer>> list = new ArrayList<>();
+        List<Integer> t = new ArrayList<>();
+        t.add(arr[0]);
+        list.add(t);
+        for (int i = 1; i < arr.length; i++) {
+            int len = list.size();
+            for (int j = 0; j < len; j++) {
+                List<Integer> temp = new ArrayList<>(list.get(j));
+                temp.add(arr[i]);
+                list.add(temp);
+            }
+            List<Integer> x = new ArrayList<>();
+            x.add(arr[i]);
+            list.add(x);
+        }
+        return list;
+    }
+
+    public static void testReverseList() {
+        ListNode head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5, null)))));
+        ListNode tail = reverseList(head);
+        while (tail != null) {
+            System.out.printf("%d -> ", tail.val);
+            tail = tail.next;
+        }
+    }
+
+    public static ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode newNode = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newNode;
+    }
+
+    static class ListNode {
+        public int val;
+        public ListNode next;
+
+        public ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
     }
 
     private static int expandAround(String s, int left, int right) {
@@ -101,22 +236,23 @@ public class Main {
     // 局限性：数据有特殊要求，数值的范围要小。
     // ***************************************************
     // 总结
+
     /**
      * <code>
-     String DONOTTOUCH = """
-      algorithm    |best       |average    |worst   |worst(space)
-      quickSort    |O(nlogn)               |O(n^2)  |O(logn)
-      mergeSort    |O(nlogn)                        |O(n)
-      countSort    |O(n)       |O(nlogn)            |O(n)
-      heapSort     |O(nlogn)                        |O(n)
-      bubbleSort   |O(n)       |O(n^2)              |O(1)
-      insertionSort|O(n)       |O(n^2)              |O(1)
-      selectionSort|O(n^2)                          |O(1)
-      shellSort    |O(n)       |O((nlogn)^2)        |O(1)
-      bucketSort   |O(n)       |O(n+k)    |O(n^2)   |O(n)
-      radixSort    |O(nk)                           |O(n+k)
-      """;
-     </code>
+     * String DONOTTOUCH = """
+     * algorithm    |best       |average    |worst   |worst(space)
+     * quickSort    |O(nlogn)               |O(n^2)  |O(logn)
+     * mergeSort    |O(nlogn)                        |O(n)
+     * countSort    |O(n)       |O(nlogn)            |O(n)
+     * heapSort     |O(nlogn)                        |O(n)
+     * bubbleSort   |O(n)       |O(n^2)              |O(1)
+     * insertionSort|O(n)       |O(n^2)              |O(1)
+     * selectionSort|O(n^2)                          |O(1)
+     * shellSort    |O(n)       |O((nlogn)^2)        |O(1)
+     * bucketSort   |O(n)       |O(n+k)    |O(n^2)   |O(n)
+     * radixSort    |O(nk)                           |O(n+k)
+     * """;
+     * </code>
      */
     // 稳定性（比较次数）
     // 不稳定：选择、快速、希尔、堆
@@ -579,7 +715,7 @@ public class Main {
                     int temp = nums[i - step];
                     nums[i - step] = nums[i];
                     nums[i] = temp;
-                    i-=step;
+                    i -= step;
                 }
             }
             step /= 2;
@@ -588,7 +724,7 @@ public class Main {
 
     public static void testShellSort() {
         for (int i = 1; i < 10000; i++) {
-            int[] list = randomList(10*i);
+            int[] list = randomList(10 * i);
             int[] list2 = Arrays.copyOf(list, list.length);
             shellSort(list);
             Arrays.sort(list2);

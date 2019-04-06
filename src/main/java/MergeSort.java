@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-class template {
+class template1 {
     public static void main(String[] args) throws FileNotFoundException {
         // Scanner in = new Scanner(System.in);
         // Scanner in = new Scanner(new File("template.in"));
