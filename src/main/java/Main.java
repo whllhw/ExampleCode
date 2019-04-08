@@ -1,11 +1,11 @@
+import java.io.PrintStream;
 import java.util.*;
-import java.io.*;
 
 public class Main {
 
     private static PrintStream out = System.out;
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         System.out.println(Math.ceil(1.1f));
         out.println("started");
         int[] nums = {1, 3, 2, -1, 2, 0, 10, 3, 4, 5};
@@ -811,35 +811,35 @@ public class Main {
     // 划分从l到r的数组
     // 小于pivot值的放在左半部分，大于pivot值放在右半部分
     // 最后返回pivot的位置
-    public static int partition(int[] nums, int l, int r) {
-        if (l >= r) {
+    public static int partition(int[] nums, int left, int right) {
+        if (left >= right) {
             return -1;
         }
         // 选中中轴值为第一个
         // i 就要从第二个开始
-        int pivot = nums[l];
-        int i = l + 1;
-        int j = r;
-        while (i <= j) {
+        int pivot = nums[left];
+        int l = left + 1;
+        int r = right;
+        while (l <= r) {
             // i一直向中间移动到第一大于划分值为止
-            while (i <= r && nums[i] < pivot) {
-                i++;
+            while (l <= right && nums[l] < pivot) {
+                l++;
             }
             // j一直向中间移动到第一个小于划分值为止
-            while (j >= l && nums[j] > pivot) {
-                j--;
+            while (r >= left && nums[r] > pivot) {
+                r--;
             }
             // 判断有无相交
-            if (i < j) {
+            if (l < r) {
                 // 无相交直接交换两个值即可
-                int t = nums[i];
-                nums[i] = nums[j];
-                nums[j] = t;
+                int t = nums[l];
+                nums[l] = nums[r];
+                nums[r] = t;
                 // 注意与pivot值相同的情况就需要手动向中间移动，不然会出现死循环
                 // 不相同的情况在后续迭代指针中会移动
-                if (nums[i] == nums[j]) {
-                    i++;
-                    j--;
+                if (nums[l] == nums[r]) {
+                    l++;
+                    r--;
                 }
             } else {
                 break;
@@ -849,9 +849,9 @@ public class Main {
         // 相交的情况就j直接和pivot值交换
         // 此时j左边的全部都大于了pivot，i右边都全部小于pivot
         // 完成了划分操作
-        nums[l] = nums[j];
-        nums[j] = pivot;
-        return j;
+        nums[left] = nums[r];
+        nums[r] = pivot;
+        return r;
     }
 
     // 快速排序
@@ -1024,7 +1024,7 @@ public class Main {
             b = c;
         }
         double t = 1.0 / Math.sqrt(5) * Math.pow((0.5 + Math.sqrt(5) / 2), n);
-        if ((long) Math.round(t) == a)
+        if (Math.round(t) == a)
             System.out.println(t);
         return a;
     }
