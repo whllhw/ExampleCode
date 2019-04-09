@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main extends Base {
-    // 分治：求解最近点对问题
+    /**
+     * 分治：求解最近点对问题
+     */
     public static Point solveClosetPoint(List<Point> pointList, int left, int right) {
         if (left > right) {
             return null;
@@ -14,9 +16,48 @@ public class Main extends Base {
         return null;
     }
 
-    // 分治：求解循环赛
-    public static void roundRobinTour(int n) {
+    /**
+     * 分治：求解循环赛
+     * 队伍数=2^n
+     * a[i][j]表示i队，第j天的对手
+     * T(n) = T(n/2) + (n/2)^2
+     * 由master method可得
+     * 复杂度O(n^2)
+     */
+    public static int[][] roundRobinTour(int n) {
+        int[][] ans = new int[n][n];
+        doRoundRobinTour(ans, n);
+        println(ans);
+        return ans;
+    }
 
+    public static void doRoundRobinTour(int[][] ans, int n) {
+        if (n == 0 || n == 1) {
+            ans[0][0] = 1;
+            return;
+        }
+        doRoundRobinTour(ans, n / 2);
+        // 通过递归，自底而上解决问题
+        // 例：
+        // 1
+        // 生成第一行，然后对称复制
+        // 1 2
+        // 2 1
+        // 生成第一、第二行，然后对称复制
+        // 1 2 3 4
+        // 2 1 4 3
+        // 3 4 1 2
+        // 4 3 2 1
+        // 思路：
+        // 按行按列迭代生成并复制
+        int m = n / 2;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                ans[i][j + m] = ans[i][j] + m;
+                ans[i + m][j] = ans[i][j + m];
+                ans[i + m][j + m] = ans[i][j];
+            }
+        }
     }
 
     public static int partition(int[] nums, int left, int right) {
@@ -97,6 +138,7 @@ public class Main extends Base {
 //        System.out.println(topK(nums, 0, nums.length - 1, 8));
 //        testTopK();
 //        testQuickSort();
+        roundRobinTour(8);
     }
 
     public static void testTopK() {

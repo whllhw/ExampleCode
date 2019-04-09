@@ -1,4 +1,5 @@
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.util.*;
 
 public class Main {
@@ -29,6 +30,84 @@ public class Main {
         // testShellSort();
 //        out.println(getAllCombinationWithFor(new int[]{1, 2, 3}));
 //        out.println(permutation(new int[]{1, 1, 2}, false));
+        testBig();
+    }
+
+    /**
+     * 大数相乘。分治法
+     */
+    public static int bigMul(int x, int y) {
+        // 划分原数字为高位、低位
+        // => A B C D
+        // 根据公式
+        // = AC*2^n + ((A-B)(D-C)+AC+BD)*2^n/2 + BD
+//        pass
+        return 0;
+    }
+
+    public static void testBig() {
+        Random random = new Random();
+        for (int i = 0; i < 10000; i++) {
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            int bits = random.nextInt(100);
+            for (int j = 0; j < bits + 1; j++) {
+                sb.append(Math.abs(random.nextInt()));
+            }
+            bits = random.nextInt(100);
+            for (int j = 0; j < bits + 1; j++) {
+                sb2.append(Math.abs(random.nextInt()));
+            }
+            BigInteger x = new BigInteger(sb.toString());
+            BigInteger y = new BigInteger(sb2.toString());
+            char[] z = bigAdd(sb.toString().toCharArray(), sb2.toString().toCharArray());
+            char[] z1 = x.add(y).toString().toCharArray();
+            if (!Arrays.equals(z, z1)) {
+                out.printf("%s \n + %s \n = %s \n %s \n", sb.toString(), sb2.toString(), new String(z), new String(z1));
+                out.println(i);
+            } else {
+                out.println("ok");
+            }
+        }
+    }
+
+    /**
+     * 大数相加
+     */
+    public static char[] bigAdd(char[] x, char[] y) {
+        char[] res = new char[Math.max(x.length, y.length) + 1];
+        int ptr = 1;
+        while (true) {
+            if (x.length - ptr < 0)
+                break;
+            if (y.length - ptr < 0)
+                break;
+            res[res.length - ptr] = (char) (x[x.length - ptr] + y[y.length - ptr] - '0' - '0');
+            ptr++;
+        }
+        while (ptr <= x.length) {
+            res[res.length - ptr] = (char) (x[x.length - ptr] - '0');
+            ptr++;
+        }
+        while (ptr <= y.length) {
+            res[res.length - ptr] = (char) (y[y.length - ptr] - '0');
+            ptr++;
+        }
+        for (int i = res.length - 1; i >= 1; i--) {
+            if (res[i] >= 10) {
+                res[i - 1] += res[i] / 10;
+                res[i] %= 10;
+            }
+        }
+        for (int i = 0; i < res.length; i++) {
+            res[i] += '0';
+        }
+        if (res[0] == '0') {
+            char[] s = new char[res.length - 1];
+            System.arraycopy(res, 1, s, 0, res.length - 1);
+            return s;
+        }
+        return res;
     }
 
     /**
