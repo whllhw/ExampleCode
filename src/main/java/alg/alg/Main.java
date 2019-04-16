@@ -2,18 +2,161 @@ package alg.alg;
 
 import alg.template.Base;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Main extends Base {
+    public static void main(String[] args) {
+        List<Point> pointList = new ArrayList<>();
+        pointList.add(new Point(9.83, -81.96));
+        pointList.add(new Point(-88.29, 44.76));
+        pointList.add(new Point(21.97, -81.49));
+        pointList.add(new Point(2.44, -1.83));
+        pointList.add(new Point(-89.17, 63.58));
+        pointList.add(new Point(20, -49.92));
+        pointList.add(new Point(-81.21, -48.01));
+        pointList.add(new Point(-33.28, -49.09));
+        pointList.add(new Point(-54.05, 12.88));
+        pointList.add(new Point(-64.85, -53.12));
+        pointList.add(new Point(12.07, 64.91));
+        pointList.add(new Point(-72.9, -21.57));
+        pointList.add(new Point(12.93, -92.71));
+        pointList.add(new Point(-27.71, -0.19));
+        pointList.add(new Point(73.17, 32.17));
+        MutPoint a = closetPoint(pointList);
+        System.out.println(a);
+        Random r = new Random();
+        r.setSeed(0);
+        while (true) {
+            pointList.clear();
+            for (int i = 0; i < 100000; i++) {
+                pointList.add(new Point(r.nextDouble() * 1000000,
+                        r.nextDouble() * 1000000));
+            }
+            System.out.println(closetPoint(pointList));
+        }
+    }
+
     /**
      * 分治：求解最近点对问题
      */
-    public static Point solveClosetPoint(List<Point> pointList, int left, int right) {
-        if (left > right) {
-            return null;
+    public static MutPoint doSolveClosetPoint(List<Point> point_list, int left, int right) {
+        /*
+         * 思路：
+         * 首先按x排序
+         * 1. 划分整个x轴划分为左一半，右一半，求解左右子问题的最近点对
+         * 2. 求解中心轴的最近点对
+         * 1) 首先按y排序
+         * 2) 遍历左边部分的点，寻找右部分的y轴最接近的6个点（由鸽舍原理可证明）
+         * 3) 得到中间（mid - min,mid + min）的最近点
+         * 3. 返回左右子问题、中间的最近点
+         */
+        if (right - left < 2) {
+            return new MutPoint(null, null, Double.MAX_VALUE);
+        } else if (right - left == 2) {
+            return new MutPoint(point_list.get(left),
+                    point_list.get(right - 1),
+                    point_list.get(left).getDistance(point_list.get(right - 1)));
         }
-        return null;
+        int mid = left + (right - left) / 2;
+        double mid_x = point_list.get(mid).x;
+        MutPoint mid_a = doSolveClosetPoint(point_list, left, mid);
+//        System.out.println(mid_a);
+        MutPoint mid_b = doSolveClosetPoint(point_list, mid, right);
+//        System.out.println(mid_b);
+        double min_mid = Math.min(mid_a.dis, mid_b.dis);
+        MutPoint min_point_from_sub = mid_a.dis < mid_b.dis ? mid_a : mid_b;
+        List<Point> point_set_left = new ArrayList<>();
+        List<Point> point_set_right = new ArrayList<>();
+        int pos = mid;
+        while (pos < right
+                && point_list.get(pos).x <= mid_x + min_mid) {
+            point_set_left.add(point_list.get(pos));
+            pos++;
+        }
+        pos = mid - 1;
+        while (pos >= left
+                && point_list.get(pos).x >= mid_x - min_mid) {
+            point_set_right.add(point_list.get(pos));
+            pos--;
+        }
+        point_set_left.sort(new compareByY());
+        point_set_right.sort(new compareByY());
+        double min_mid_dis = Double.MAX_VALUE;
+        MutPoint min_point_com = null;
+        int right_pos = 0;
+        for (int i = 0; i < point_set_left.size(); i++) {
+            double x = point_set_left.get(i).x;
+            double y = point_set_left.get(i).y;
+            right_pos = Math.max(0, right_pos - 6);
+            while (right_pos < point_set_right.size()
+                    && point_set_right.get(right_pos).y < y - min_mid) {
+                right_pos++;
+            }
+            int counter = 0;
+            while (counter < 6 && right_pos < point_set_right.size()) {
+                double current_min_dis = point_set_left.get(i)
+                        .getDistance(point_set_right.get(right_pos));
+                if (current_min_dis < min_mid_dis) {
+                    min_mid_dis = current_min_dis;
+                    min_point_com = new MutPoint(
+                            point_set_left.get(i),
+                            point_set_right.get(right_pos),
+                            current_min_dis
+                    );
+                }
+                right_pos++;
+                counter++;
+            }
+        }
+        if (min_mid < min_mid_dis) {
+            return min_point_from_sub;
+        } else {
+            return min_point_com;
+        }
+    }
+
+    public static MutPoint closetPoint(List<Point> pointList) {
+        pointList.sort(
+                (x, y) -> {
+                    if (x.x > y.x)
+                        return 1;
+                    else if (x.x == y.x)
+                        return 0;
+                    else
+                        return -1;
+                }
+        );
+        return doSolveClosetPoint(pointList, 0, pointList.size());
+    }
+
+    static class compareByY implements Comparator<Point> {
+        @Override
+        public int compare(Point o1, Point o2) {
+            if (o1.y > o2.y) {
+                return 1;
+            } else if (o1.y == o2.y) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    static class MutPoint {
+        public Point x;
+        public Point y;
+        public double dis;
+
+        public MutPoint(Point x, Point y, double dis) {
+            this.x = x;
+            this.y = y;
+            this.dis = dis;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%f,%s,%s", x == null ? Double.MAX_VALUE : x.getDistance(y), x == null ? "null" : x.toString(), y == null ? "null" : y.toString());
+        }
     }
 
     /**
@@ -128,7 +271,7 @@ public class Main extends Base {
         quickSort(nums, mid + 1, end);
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        int[] nums = new int[]{
 //                2, 3, 1, 3, 2, 10, 5, 3, 1
 //        };
@@ -138,8 +281,8 @@ public class Main extends Base {
 //        System.out.println(topK(nums, 0, nums.length - 1, 8));
 //        testTopK();
 //        testQuickSort();
-        roundRobinTour(8);
-    }
+//        roundRobinTour(8);
+//    }
 
     public static void testTopK() {
         for (int i = 1; i < 1000000; i++) {
@@ -189,7 +332,24 @@ public class Main extends Base {
     }
 
     static class Point {
-        int x;
-        int y;
+        double x;
+        double y;
+
+        public Point(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getDistance(Point other) {
+            return Math.sqrt(
+                    Math.pow(other.x - x, 2)
+                            + Math.pow(other.y - y, 2)
+            );
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%f,%f)", x, y);
+        }
     }
 }
