@@ -5,7 +5,14 @@ import alg.template.Base;
 import java.util.*;
 
 public class Main extends Base {
+
     public static void main(String[] args) {
+        testTopK();
+        roundRobinTour(16);
+        testClosetPoint();
+    }
+
+    public static void testClosetPoint() {
         List<Point> pointList = new ArrayList<>();
         pointList.add(new Point(9.83, -81.96));
         pointList.add(new Point(-88.29, 44.76));
@@ -213,6 +220,12 @@ public class Main extends Base {
         if (left >= right) {
             return -1;
         }
+        // 找出近似的中位数，与left交换
+        int middlePos = solveMiddlePos(nums, left, right);
+        int temp = nums[middlePos];
+        nums[middlePos] = nums[left];
+        nums[left] = temp;
+
         int pivot = nums[left];
         int low = left;
         int high = right;
@@ -227,6 +240,7 @@ public class Main extends Base {
             nums[high] = nums[low];
         }
         nums[low] = pivot;
+        System.out.println(String.format("左右划分大小：%d %d", low - left, right - low));
         return low;
     }
 
@@ -260,7 +274,62 @@ public class Main extends Base {
     }
 
     /**
-     * 复杂度O(nlogn) 最坏O(n^2)
+     * 寻找中间位置的近似解
+     * 目的：避免划分时选择到最差的情况，最坏复杂度到O(n^2)
+     */
+    public static int solveMiddlePos(int[] nums, int start, int end) {
+        // 思路：
+        // 1. 将原始数组划分为5个小数组
+        // 2. 使用插入排序每个小数组
+        // 3. 此时取小数组的中间值（2）再进行排序
+        // 4. 得到中位数的中位数，即可保证最坏划分为1/4 3/4，不会出现更极端的情况
+        // 消耗O(n)时间，避免出现O(n^2)的情况
+        // 注意维护排序时索引的变化
+        final int eachSubSize = 5;
+        int size = end - start + 1;
+        int subSize = size / eachSubSize;
+        if (subSize == 0) {
+            return start;
+        }
+        int[][] list = new int[subSize][eachSubSize];
+        int[][] index = new int[subSize][eachSubSize];
+        int pos = start;
+        for (int i = 0; i < subSize; i++) {
+            for (int j = 0; j < eachSubSize; j++) {
+                list[i][j] = nums[pos];
+                index[i][j] = pos;
+                pos++;
+            }
+        }
+        for (int i = 0; i < subSize; i++) {
+            insertionSortMut(list[i], index[i]);
+        }
+        int[] midList = new int[subSize];
+        int[] midIndex = new int[subSize];
+        for (int i = 0; i < subSize; i++) {
+            midList[i] = list[i][eachSubSize / 2];
+            midIndex[i] = index[i][eachSubSize / 2];
+        }
+        insertionSortMut(midList, midIndex);
+        return midIndex[subSize / 2];
+    }
+
+    public static void insertionSortMut(int[] list, int[] index) {
+        for (int i = 1; i < list.length; i++) {
+            while (i >= 1 && list[i] < list[i - 1]) {
+                int temp = list[i];
+                list[i] = list[i - 1];
+                list[i - 1] = temp;
+                temp = index[i];
+                index[i] = index[i - 1];
+                index[i - 1] = temp;
+                i--;
+            }
+        }
+    }
+
+    /**
+     * 快速排序。复杂度O(nlogn) 最坏O(n^2)
      */
     public static void quickSort(int[] nums, int start, int end) {
         if (end <= start) {
@@ -270,19 +339,6 @@ public class Main extends Base {
         quickSort(nums, start, mid - 1);
         quickSort(nums, mid + 1, end);
     }
-
-//    public static void main(String[] args) {
-//        int[] nums = new int[]{
-//                2, 3, 1, 3, 2, 10, 5, 3, 1
-//        };
-//        int[] copy = Arrays.copyOf(nums, nums.length);
-//        Arrays.sort(copy);
-//        System.out.println(copy[8 - 1]);
-//        System.out.println(topK(nums, 0, nums.length - 1, 8));
-//        testTopK();
-//        testQuickSort();
-//        roundRobinTour(8);
-//    }
 
     public static void testTopK() {
         for (int i = 1; i < 1000000; i++) {
