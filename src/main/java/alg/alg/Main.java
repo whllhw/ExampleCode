@@ -2,14 +2,47 @@ package alg.alg;
 
 import alg.template.Base;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main extends Base {
 
-    public static void main(String[] args) {
-        testTopK();
-        roundRobinTour(16);
-        testClosetPoint();
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File("G:\\ACM\\code\\src\\main\\java\\alg\\alg\\in.txt"));
+        test1(scanner);
+//        test2(scanner);
+//        test3(scanner);
+    }
+
+    public static void test1(Scanner scanner) {
+        int n = scanner.nextInt();
+        for (int j = 0; j < n; j++) {
+            int size = scanner.nextInt();
+            int k = scanner.nextInt();
+            int[] nums = new int[size];
+            for (int i = 0; i < size; i++) {
+                nums[i] = scanner.nextInt();
+            }
+            System.out.println(topK(nums, 0, nums.length - 1, k));
+        }
+    }
+
+    public static void test2(Scanner scanner) {
+        int n = scanner.nextInt();
+        println(roundRobinTour(n));
+    }
+
+    public static void test3(Scanner scanner) {
+        int caseLen = scanner.nextInt();
+        for (int j = 0; j < caseLen; j++) {
+            int sizePoint = scanner.nextInt();
+            List<Point> pointList = new ArrayList<>();
+            for (int i = 0; i < sizePoint; i++) {
+                pointList.add(new Point(scanner.nextDouble(), scanner.nextDouble()));
+            }
+            System.out.println(closetPoint(pointList));
+        }
     }
 
     public static void testClosetPoint() {
@@ -175,9 +208,12 @@ public class Main extends Base {
      * 复杂度O(n^2)
      */
     public static int[][] roundRobinTour(int n) {
+        if (n <= 0) {
+            return null;
+        }
         int[][] ans = new int[n][n];
         doRoundRobinTour(ans, n);
-        println(ans);
+//        println(ans);
         return ans;
     }
 
@@ -240,13 +276,13 @@ public class Main extends Base {
             nums[high] = nums[low];
         }
         nums[low] = pivot;
-        System.out.println(String.format("左右划分大小：%d %d", low - left, right - low));
+//        System.out.println(String.format("左右划分大小：%d %d", low - left, right - low));
         return low;
     }
 
     /**
      * 求解topK问题
-     * 复杂度O(nlogn)
+     * 复杂度O(n)
      */
     public static int topK(int[] nums, int start, int end, int k) {
         // 思路：使用快排中的划分，将原数组划为logn大小的
@@ -257,6 +293,10 @@ public class Main extends Base {
         // 注意：递归调用时mid与左边界的距离才是k（dis=mid-start+1）
         if (start == end) {
             return nums[start];
+        }
+        if (end - start + 1 < 75) {
+            Arrays.sort(nums);
+            return nums[k - 1];
         }
         // x0 x1 x2 x3 x4 pos x6 x7 x8
         //  pos > k 时,在左部分,仍然是第k个
@@ -338,21 +378,6 @@ public class Main extends Base {
         int mid = partition(nums, start, end);
         quickSort(nums, start, mid - 1);
         quickSort(nums, mid + 1, end);
-    }
-
-    public static void testTopK() {
-        for (int i = 1; i < 1000000; i++) {
-            int[] nums = randomList(i);
-            int K = (int) (Math.random() * i) + 1;
-            assert K > 0 && K <= i;
-            int ans = topK(nums, 0, nums.length - 1, K);
-            int[] nums2 = Arrays.copyOf(nums, nums.length);
-            Arrays.sort(nums2);
-            System.out.println(i);
-            if (ans != nums2[K - 1]) {
-                System.out.printf("error: %s topK %d %d\n", Arrays.toString(nums2), ans, nums2[K - 1]);
-            }
-        }
     }
 
     public static int[] randomList(int len) {

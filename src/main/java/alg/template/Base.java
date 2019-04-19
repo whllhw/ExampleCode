@@ -11,6 +11,10 @@ public class Base {
     }
 
     protected static void println(int[][] t) {
+        if (t == null) {
+            out.println("null");
+            return;
+        }
         out.println("[");
         for (int i = 0; i < t.length; i++) {
             println(t[i]);
