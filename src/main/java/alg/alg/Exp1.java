@@ -2,84 +2,17 @@ package alg.alg;
 
 import alg.template.Base;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
-public class Main extends Base {
-
-    public static void main(String[] args) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File("G:\\ACM\\code\\src\\main\\java\\alg\\alg\\in.txt"));
-        test1(scanner);
-//        test2(scanner);
-//        test3(scanner);
-    }
-
-    public static void test1(Scanner scanner) {
-        int n = scanner.nextInt();
-        for (int j = 0; j < n; j++) {
-            int size = scanner.nextInt();
-            int k = scanner.nextInt();
-            int[] nums = new int[size];
-            for (int i = 0; i < size; i++) {
-                nums[i] = scanner.nextInt();
-            }
-            System.out.println(topK(nums, 0, nums.length - 1, k));
-        }
-    }
-
-    public static void test2(Scanner scanner) {
-        int n = scanner.nextInt();
-        println(roundRobinTour(n));
-    }
-
-    public static void test3(Scanner scanner) {
-        int caseLen = scanner.nextInt();
-        for (int j = 0; j < caseLen; j++) {
-            int sizePoint = scanner.nextInt();
-            List<Point> pointList = new ArrayList<>();
-            for (int i = 0; i < sizePoint; i++) {
-                pointList.add(new Point(scanner.nextDouble(), scanner.nextDouble()));
-            }
-            System.out.println(closetPoint(pointList));
-        }
-    }
-
-    public static void testClosetPoint() {
-        List<Point> pointList = new ArrayList<>();
-        pointList.add(new Point(9.83, -81.96));
-        pointList.add(new Point(-88.29, 44.76));
-        pointList.add(new Point(21.97, -81.49));
-        pointList.add(new Point(2.44, -1.83));
-        pointList.add(new Point(-89.17, 63.58));
-        pointList.add(new Point(20, -49.92));
-        pointList.add(new Point(-81.21, -48.01));
-        pointList.add(new Point(-33.28, -49.09));
-        pointList.add(new Point(-54.05, 12.88));
-        pointList.add(new Point(-64.85, -53.12));
-        pointList.add(new Point(12.07, 64.91));
-        pointList.add(new Point(-72.9, -21.57));
-        pointList.add(new Point(12.93, -92.71));
-        pointList.add(new Point(-27.71, -0.19));
-        pointList.add(new Point(73.17, 32.17));
-        MutPoint a = closetPoint(pointList);
-        System.out.println(a);
-        Random r = new Random();
-        r.setSeed(0);
-        while (true) {
-            pointList.clear();
-            for (int i = 0; i < 100000; i++) {
-                pointList.add(new Point(r.nextDouble() * 1000000,
-                        r.nextDouble() * 1000000));
-            }
-            System.out.println(closetPoint(pointList));
-        }
-    }
+public class Exp1 extends Base {
 
     /**
      * 分治：求解最近点对问题
      */
-    public static MutPoint doSolveClosetPoint(List<Point> point_list, int left, int right) {
+    public static MutPoint doSolveClosetPoint(List<Point> pointList, int left, int right) {
         /*
          * 思路：
          * 首先按x排序
@@ -93,15 +26,15 @@ public class Main extends Base {
         if (right - left < 2) {
             return new MutPoint(null, null, Double.MAX_VALUE);
         } else if (right - left == 2) {
-            return new MutPoint(point_list.get(left),
-                    point_list.get(right - 1),
-                    point_list.get(left).getDistance(point_list.get(right - 1)));
+            return new MutPoint(pointList.get(left),
+                    pointList.get(right - 1),
+                    pointList.get(left).getDistance(pointList.get(right - 1)));
         }
         int mid = left + (right - left) / 2;
-        double mid_x = point_list.get(mid).x;
-        MutPoint mid_a = doSolveClosetPoint(point_list, left, mid);
+        double mid_x = pointList.get(mid).x;
+        MutPoint mid_a = doSolveClosetPoint(pointList, left, mid);
 //        System.out.println(mid_a);
-        MutPoint mid_b = doSolveClosetPoint(point_list, mid, right);
+        MutPoint mid_b = doSolveClosetPoint(pointList, mid, right);
 //        System.out.println(mid_b);
         double min_mid = Math.min(mid_a.dis, mid_b.dis);
         MutPoint min_point_from_sub = mid_a.dis < mid_b.dis ? mid_a : mid_b;
@@ -109,14 +42,14 @@ public class Main extends Base {
         List<Point> point_set_right = new ArrayList<>();
         int pos = mid;
         while (pos < right
-                && point_list.get(pos).x <= mid_x + min_mid) {
-            point_set_left.add(point_list.get(pos));
+                && pointList.get(pos).x <= mid_x + min_mid) {
+            point_set_left.add(pointList.get(pos));
             pos++;
         }
         pos = mid - 1;
         while (pos >= left
-                && point_list.get(pos).x >= mid_x - min_mid) {
-            point_set_right.add(point_list.get(pos));
+                && pointList.get(pos).x >= mid_x - min_mid) {
+            point_set_right.add(pointList.get(pos));
             pos--;
         }
         point_set_left.sort(new compareByY());
@@ -386,30 +319,6 @@ public class Main extends Base {
             ans[i] = (int) (Math.random() * 100000);
         }
         return ans;
-    }
-
-    public static void testQuickSort() {
-        for (int i = 286; i < 100000; i++) {
-            // System.out.println(i);
-            int[] ans = randomList(i);
-            int[] ans2 = Arrays.copyOf(ans, ans.length);
-            long start = System.currentTimeMillis();
-            Arrays.sort(ans);
-            long stop = System.currentTimeMillis();
-            String system = Arrays.toString(ans);
-            long start2 = System.currentTimeMillis();
-            quickSort(ans2, 0, ans2.length - 1);
-            int[] temp = ans2;
-            // int[] temp = quickSortWithCopyArray(ans2, ans2.length);
-            long stop2 = System.currentTimeMillis();
-            String self = Arrays.toString(temp);
-            System.out.printf("i:%d sys:%d my:%d\n", i, stop - start, stop2 - start2);
-            if (!system.equals(self)) {
-                System.out.println(self);
-                System.out.println(system);
-                return;
-            }
-        }
     }
 
     static class Point {
