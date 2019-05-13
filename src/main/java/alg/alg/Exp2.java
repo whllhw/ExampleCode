@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Exp2 {
 
     /**
-     * 多段图最短路径
+     * 多段图最短路径，复杂度O(n^2*m)
      *
      * @param W     G[i][j] = cost 带权图，i 到 j 消耗为 cost
      * @param e     e[i] = j 表明节点i的所处的阶段为j
