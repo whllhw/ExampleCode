@@ -5,13 +5,21 @@ import java.util.Scanner;
 
 public class Exp2_5 {
     /**
+     * 时间复杂度O(n^2)
+     *
      * @param a 字符串
      * @param b 字符串
      * @return 最小的编辑距离
      */
     public static int editDistance(char[] a, char[] b) {
-        // 思路：
-        // 
+        // E[i,j]表示a从0到i，b从0到j中的最小编辑距离
+        // 递推公式：E[i,j] = min( E[i-1,j] + 1 ,E[i][j-1] + 1, E[i-1][j-1] + diff)
+        // i-1 加上一个字符
+        // j-1 加上一个字符
+        // 前面i-1 和 j-1替换一个字符
+        // 初始化：
+        // E[i,o] = i
+        // E[0,i] = i
         int m = a.length;
         int n = b.length;
         int[][] E = new int[m + 1][n + 1];
