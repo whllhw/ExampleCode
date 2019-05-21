@@ -30,7 +30,6 @@ public class Exp2_2 {
                     dis[j][k] = Math.min(
                             dis[j][i] + dis[i][k], dis[j][k]
                     );
-
                 }
             }
         }

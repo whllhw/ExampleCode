@@ -21,6 +21,7 @@ public class Exp2 {
         // 从最后一段开始求能到该点的最小权值。直到能到源点为止。
 
         int[][] cost = new int[sizeI + 1][e.length];
+        // 初始化汇点的cost
         for (int i = 0; i < W.length; i++) {
             // 汇点为结束点
             if (e[i] != sizeI)

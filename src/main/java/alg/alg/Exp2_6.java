@@ -35,13 +35,29 @@ public class Exp2_6 {
                 }
             }
         }
-
-
+        solvePath(weight, values, dp, totalWeight);
         return dp[size][totalWeight];
     }
 
-    public static void solvePath(int[] weight, int[] values, int[][] dp) {
-
+    public static void solvePath(int[] weight, int[] values, int[][] dp, int totalWeight) {
+        int size = values.length;
+        int currentWeight = totalWeight;
+        System.out.println("选择的物品为:");
+        StringBuilder sb = new StringBuilder();
+        while (size > 0) {
+            if (dp[size][currentWeight] == dp[size - 1][currentWeight]) {
+                // 未选择第i件物品
+            } else {
+                sb.append(values[size - 1]);
+                sb.append("+");
+                System.out.print(size);
+                System.out.print(" ");
+                currentWeight -= weight[size - 1];
+            }
+            size--;
+        }
+        System.out.println();
+        System.out.println(sb.substring(0, sb.length() - 1));
     }
 
     /**
