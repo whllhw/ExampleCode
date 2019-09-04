@@ -33,9 +33,7 @@ public class 考试安排 {
             addNode(hashMap, nodes, a, b);
             addNode(hashMap, nodes, b, a);
         }
-        for (int i = 1; i <= 2 * n; i++) {
-            treeSet.add(nodes[i]);
-        }
+        treeSet.addAll(Arrays.asList(nodes).subList(1, 2 * n + 1));
         int counter = 0;
         ArrayList<Node> output = new ArrayList<>(2 * n);
         while (true) {
