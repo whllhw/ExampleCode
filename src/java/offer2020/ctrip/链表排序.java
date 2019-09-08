@@ -11,6 +11,7 @@ class Main {
 
     /*请完成下面这个函数，实现题目要求的功能
      ******************************开始写代码******************************/
+    // 100%
     static ListNode partition(ListNode head, int m) {
         ListNode left = new ListNode(0);
         ListNode right = new ListNode(0);

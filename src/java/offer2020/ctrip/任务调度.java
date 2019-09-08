@@ -21,6 +21,7 @@ class Main2 {
     // 第二台 3
     // 第三台 4 2
     // 最短时间为 6
+    // https://blog.csdn.net/qq_35314344/article/details/77504765
     static int schedule(int m, int[] array) {
         int sum = 0;
         for (int i = 0; i < array.length; i++) {
